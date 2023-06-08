@@ -57,7 +57,7 @@ batchWrite.put('users', { name: 'jeff' });
 and all of `DocumentClient`'s features!
 # Installation
 ```
-npm i parana-games/tinymo
+npm i @parana-games/tinymo
 ```
 # Setup
 ```typescript

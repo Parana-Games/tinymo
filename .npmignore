@@ -1,0 +1,8 @@
+/test
+/src
+/docs
+/.vscode
+/.github
+tsconfig.build.json
+tsconfig.json
+jest.config.js

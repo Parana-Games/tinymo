@@ -1,0 +1,23 @@
+{
+  "name": "@parana-games/tinymo",
+  "version": "1.0.0",
+  "description": "simple DynamoDB DocumentClient wrapper",
+  "types": "./dist-types/index.d.ts",
+  "main": "./dist/index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@aws-sdk/lib-dynamodb": "^3.279.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.0",
+    "@typescript-eslint/eslint-plugin": "^5.54.1",
+    "@typescript-eslint/parser": "^5.54.1",
+    "eslint": "^8.36.0",
+    "ts-jest": "^29.0.5",
+    "typescript": "^4.9.5"
+  }
+}

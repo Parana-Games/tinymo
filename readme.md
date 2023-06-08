@@ -61,12 +61,12 @@ npm i @parana-games/tinymo
 ```
 # Setup
 ```typescript
-import { Client } from '@parana-games/tinymo';
-const tinymo = Client.default();
+import { TinymoClient } from '@parana-games/tinymo';
+const tinymo = TinymoClient.default();
 ```
 Optionally, set your own `DynamoDBClient`: 
 ```typescript
-Client.setDynamoDBClient(new DynamoDBClient({})); // Useful when using X-Ray!
+TinymoClient.setDynamoDBClient(new DynamoDBClient({})); // Useful when using X-Ray!
 ```
 # Testability
 Use `build()` on any tinymo object to output pure DynamoDB JSON-based command inputs:

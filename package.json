@@ -1,14 +1,20 @@
 {
   "name": "@parana-games/tinymo",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "simple DynamoDB DocumentClient wrapper",
   "types": "./dist-types/index.d.ts",
   "main": "./dist/index.js",
   "scripts": {
     "test": "jest"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "parana-games",
+  "license": "MIT",
+  "keywords": [
+    "aws",
+    "dynamodb",
+    "documentclient",
+    "wrapper"
+  ],
   "dependencies": {
     "@aws-sdk/lib-dynamodb": "^3.279.0"
   },

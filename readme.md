@@ -68,6 +68,23 @@ Optionally, set your own `DynamoDBClient`:
 ```typescript
 TinymoClient.setDynamoDBClient(new DynamoDBClient({})); // Useful when using X-Ray!
 ```
+# Usage
+Create requests through the client:
+```typescript
+const put = tinymo.put('users', { id: '123', name: 'dan' });
+const get = tinymo.get('games', { id: 'pool-stars' }).attributes('description');
+const query = tinymo.query('users').keyBetween('sk', 'order#001', 'order#999');
+```
+Run requests: 
+```typescript
+await put.run()
+const getResult = await get.run();
+const queryResult = await query.run();
+```
+All tinymo requests are `run`-able, so you can do things like: 
+```typescript
+Promise.all([put, get, query].map(request => request.run()));
+```
 # Testability
 Use `build()` on any tinymo object to output pure DynamoDB JSON-based command inputs:
 ```typescript

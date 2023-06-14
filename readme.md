@@ -30,9 +30,7 @@ const update = {
 ```
 # 😌
 ```typescript
-const update = tinymo.update('users', { id: 'john' });
-update.add('orders', 1);
-update.condition('balance', '>', 10);
+const update = tinymo.update('users', { id: 'john' }).add('orders', 1).condition('balance', '>', 10);
 ```
 
 # Features

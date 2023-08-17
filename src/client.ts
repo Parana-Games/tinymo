@@ -17,19 +17,24 @@ import { DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb';
 let DOCUMENT_CLIENT: DynamoDBDocumentClient;
 let TINYMO_CLIENT: TinymoClient;
 
+
 export class TinymoClient {
   private constructor(readonly client: DynamoDBDocumentClient) { }
 
   static setDocumentClient(client?: DynamoDBDocumentClient) {
-    const marshallOptions = { convertEmptyValues: true, removeUndefinedValues: true, convertClassInstanceToMap: true };
-    DOCUMENT_CLIENT = client ?? DynamoDBDocumentClient.from(new DynamoDBClient({}), { marshallOptions });
+    DOCUMENT_CLIENT = client ?? TinymoClient.createDefaultDocumentClient()
     TINYMO_CLIENT = new TinymoClient(DOCUMENT_CLIENT);
   }
 
   static default(): TinymoClient {
-    DOCUMENT_CLIENT = DOCUMENT_CLIENT ?? DynamoDBDocumentClient.from(new DynamoDBClient({}));
+    DOCUMENT_CLIENT = DOCUMENT_CLIENT ?? TinymoClient.createDefaultDocumentClient()
     TINYMO_CLIENT = TINYMO_CLIENT ?? new TinymoClient(DOCUMENT_CLIENT);
     return TINYMO_CLIENT;
+  }
+
+  private static createDefaultDocumentClient() { 
+    const marshallOptions = { convertEmptyValues: true, removeUndefinedValues: true, convertClassInstanceToMap: true };
+    return DynamoDBDocumentClient.from(new DynamoDBClient({}), { marshallOptions });    
   }
 
   put(tableName: string, item: any): Put { return new Put(tableName, item).client(DOCUMENT_CLIENT); }

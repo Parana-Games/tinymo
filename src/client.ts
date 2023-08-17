@@ -12,32 +12,34 @@ import { Transaction } from './transaction';
 import { BatchGet } from './batch-get';
 import { BatchWrite } from './batch-write';
 import { TransactGet } from './transact-get';
+import { DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb';
 
-let DYNAMODB_CLIENT: DynamoDBClient;
+let DOCUMENT_CLIENT: DynamoDBDocumentClient;
 let TINYMO_CLIENT: TinymoClient;
 
 export class TinymoClient {
-  private constructor(readonly client: DynamoDBClient) { }
+  private constructor(readonly client: DynamoDBDocumentClient) { }
 
-  static setDynamoDBClient(client?: DynamoDBClient) {
-    DYNAMODB_CLIENT = client ?? new DynamoDBClient({});
-    TINYMO_CLIENT = new TinymoClient(DYNAMODB_CLIENT);
+  static setDocumentClient(client?: DynamoDBDocumentClient) {
+    const marshallOptions = { convertEmptyValues: true, removeUndefinedValues: true, convertClassInstanceToMap: true };
+    DOCUMENT_CLIENT = client ?? DynamoDBDocumentClient.from(new DynamoDBClient({}), { marshallOptions });
+    TINYMO_CLIENT = new TinymoClient(DOCUMENT_CLIENT);
   }
 
   static default(): TinymoClient {
-    DYNAMODB_CLIENT = DYNAMODB_CLIENT ?? new DynamoDBClient({});
-    TINYMO_CLIENT = TINYMO_CLIENT ?? new TinymoClient(DYNAMODB_CLIENT);
+    DOCUMENT_CLIENT = DOCUMENT_CLIENT ?? DynamoDBDocumentClient.from(new DynamoDBClient({}));
+    TINYMO_CLIENT = TINYMO_CLIENT ?? new TinymoClient(DOCUMENT_CLIENT);
     return TINYMO_CLIENT;
   }
 
-  put(tableName: string, item: any): Put { return new Put(tableName, item).client(DYNAMODB_CLIENT); }
-  update(tableName: string, key: any): Update { return new Update(tableName, key).client(DYNAMODB_CLIENT); }
-  delete(tableName: string, key: any): Delete { return new Delete(tableName, key).client(DYNAMODB_CLIENT); }
-  get(tableName: string, key: any): Get { return new Get(tableName, key).client(DYNAMODB_CLIENT); }
-  scan(tableName: string): Scan { return new Scan(tableName).client(DYNAMODB_CLIENT); }
-  query(tableName: string): Query { return new Query(tableName).client(DYNAMODB_CLIENT); }
-  batchGet(): BatchGet { return new BatchGet(DYNAMODB_CLIENT); }
-  batchWrite(): BatchWrite { return new BatchWrite(DYNAMODB_CLIENT) } 
-  transactGet(): TransactGet { return new TransactGet(DYNAMODB_CLIENT); }
-  transaction(): Transaction { return new Transaction(DYNAMODB_CLIENT) }
+  put(tableName: string, item: any): Put { return new Put(tableName, item).client(DOCUMENT_CLIENT); }
+  update(tableName: string, key: any): Update { return new Update(tableName, key).client(DOCUMENT_CLIENT); }
+  delete(tableName: string, key: any): Delete { return new Delete(tableName, key).client(DOCUMENT_CLIENT); }
+  get(tableName: string, key: any): Get { return new Get(tableName, key).client(DOCUMENT_CLIENT); }
+  scan(tableName: string): Scan { return new Scan(tableName).client(DOCUMENT_CLIENT); }
+  query(tableName: string): Query { return new Query(tableName).client(DOCUMENT_CLIENT); }
+  batchGet(): BatchGet { return new BatchGet(DOCUMENT_CLIENT); }
+  batchWrite(): BatchWrite { return new BatchWrite(DOCUMENT_CLIENT) }
+  transactGet(): TransactGet { return new TransactGet(DOCUMENT_CLIENT); }
+  transaction(): Transaction { return new Transaction(DOCUMENT_CLIENT) }
 }

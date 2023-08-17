@@ -1,8 +1,7 @@
 import { Delete } from './delete';
 import { Put } from './put';
 import { Update } from './update';
-import { DynamoDBClient, } from '@aws-sdk/client-dynamodb';
-import { TransactWriteCommand, TransactWriteCommandInput, TransactWriteCommandOutput } from '@aws-sdk/lib-dynamodb';
+import { DynamoDBDocumentClient, TransactWriteCommand, TransactWriteCommandInput, TransactWriteCommandOutput } from '@aws-sdk/lib-dynamodb';
 import { ConditionCheck } from './condition-check';
 import { TransactWritable } from './common';
 
@@ -12,7 +11,7 @@ export class Transaction {
   public get length() { return this.transactWriteItems.length; }
   public isEmpty() { return this.length === 0; }
 
-  constructor(private client: DynamoDBClient) { }
+  constructor(private client: DynamoDBDocumentClient) { }
 
   push(...transactable: TransactWritable[]): Transaction { this.transactWriteItems.push(...transactable); return this; }
   build(): TransactWriteCommandInput { return { TransactItems: this.transactWriteItems.map((item) => item.transactWriteItem()) }; }

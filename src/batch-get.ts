@@ -1,7 +1,6 @@
-import { BatchGetCommand, BatchGetCommandInput, BatchGetCommandOutput } from "@aws-sdk/lib-dynamodb";
+import { BatchGetCommand, BatchGetCommandInput, BatchGetCommandOutput, DynamoDBDocument, DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
 import { KeysAndAttributes } from "@aws-sdk/client-dynamodb";
 import { ReturnConsumedCapacity } from "./common";
-import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { ProjectionExpressable } from "./projection-expressable";
 
 export class Keys extends ProjectionExpressable {
@@ -21,7 +20,7 @@ export class Keys extends ProjectionExpressable {
 }
 
 export class BatchGet {
-  constructor(private client?: DynamoDBClient) { }
+  constructor(private client?: DynamoDBDocumentClient) { }
 
   private requestItems: Keys[] = [];
 

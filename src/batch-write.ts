@@ -1,7 +1,6 @@
 import { Delete } from './delete';
 import { Put } from './put';
-import { DynamoDBClient, } from '@aws-sdk/client-dynamodb';
-import { BatchWriteCommand, BatchWriteCommandInput, BatchWriteCommandOutput } from '@aws-sdk/lib-dynamodb';
+import { BatchWriteCommand, BatchWriteCommandInput, BatchWriteCommandOutput, DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb';
 import { WriteRequest } from '@aws-sdk/client-dynamodb';
 import { ReturnConsumedCapacity, ReturnItemCollectionMetrics } from './common';
 
@@ -15,7 +14,7 @@ export class BatchWrite {
   public get items() { return this.batchWriteItems; }
   public get length() { return this.batchWriteItems.length; }
 
-  constructor(private client: DynamoDBClient) { }
+  constructor(private client: DynamoDBDocumentClient) { }
 
   push(...writes: BatchWritable[]): BatchWrite { this.batchWriteItems.push(...writes); return this; }
   async run(): Promise<BatchWriteCommandOutput> { return await this.client.send(new BatchWriteCommand(this.build())); }

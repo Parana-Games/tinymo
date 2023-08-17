@@ -1,6 +1,6 @@
 {
   "name": "@parana-games/tinymo",
-  "version": "1.1.1",
+  "version": "2.0.0",
   "description": "simple DynamoDB DocumentClient wrapper",
   "types": "./dist-types/index.d.ts",
   "main": "./dist/index.js",

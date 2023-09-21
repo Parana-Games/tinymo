@@ -14,6 +14,7 @@ export class Update extends Write {
   async run(): Promise<UpdateCommandOutput> { return await this._client!.send(new UpdateCommand(this.build())) }
   transactWriteItem(): TransactWriteItem { return { Update: this.build() as any as TransactUpdate } }
 
+  isEmpty(): boolean { return this.setBuilder.isEmpty() && this.addBuilder.isEmpty() && this.removeBuilder.isEmpty() && this.deleteBuilder.isEmpty() }
   add(key: string, value: any): Update { this.addBuilder.pair(key, value, (n, v) => { return `${n} ${v}` }); return this; }
   subtract(key: string, value: any): Update { this.setBuilder.pair(key, value, (n, v) => { return `${n} = ${n} - ${v}` }); return this; }
 

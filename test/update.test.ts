@@ -4,7 +4,9 @@ describe('update', () => {
   const update = new Update('table1850', { PK: 'big', SK: 'boi' })
 
   it('build with just one set', () => {
+    expect(update.isEmpty()).toBe(true)
     update.set('a', 1)
+    expect(update.isEmpty()).toBe(false)
     const built = update.build()
 
     expect(built).toEqual({
@@ -196,8 +198,12 @@ describe('update', () => {
       UpdateExpression: 'SET #autonomy = :autonomy'
     }
 
-    const update2 = new Update('90zcjx', { PK: 'catch', SK: 33 }).set('autonomy', false).condition('autonomy', '=', true)
+    const update2 = new Update('90zcjx', { PK: 'catch', SK: 33 })
     update2.returnItemCollectionMetrics = 'NONE'
+
+    expect(update2.isEmpty()).toBe(true)
+    update2.set('autonomy', false).condition('autonomy', '=', true)
+    expect(update2.isEmpty()).toBe(false)
 
     const expected2 = {
       ConditionExpression: '#autonomy = :autonomyEqualsConditionValue',

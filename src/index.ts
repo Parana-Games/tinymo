@@ -10,6 +10,7 @@ export { Transaction } from './transaction';
 export { BatchGet } from './batch-get';
 export { BatchWrite } from './batch-write';
 export { TransactGet } from './transact-get';
+export { Write } from './write';
 
 import { TinymoClient } from "./client";
 export const tinymo = TinymoClient.default();

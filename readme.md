@@ -43,9 +43,9 @@ import { tinymo } from '@parana-games/tinymo';
 2. Create requests:
 > **tinymo** supports all of `DocumentClient`'s requests:
 ```typescript
-const update = tinymo.update('tableName', { name: 'John' })
-const put = tinymo.put('tableName', someItem)
-const deleteRequest = tinymo.delete('tableName', { id: 1 })
+const update = tinymo.update('table', { name: 'John' })
+const put = tinymo.put('table', someItem)
+const deleteRequest = tinymo.delete('table', { id: 1 })
 const get = tinymo.get('table', { id: 'id' })
 const batchGet = tinymo.batchGet()
 const batchWrite = tinymo.batchWrite()

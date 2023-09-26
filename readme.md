@@ -89,7 +89,7 @@ transaction.put('users', { id: 'john', balance: 20 });
 transaction.delete('orders', { id: '123' });
 ```
 
-2. Using the `push` method to add `Write` objects to the transaction.
+2. Using the `push` method, which accepts `Write` objects.
 > `Write` is the base class of `Update`, `Put` and `Delete`. 
 ```typescript
 const writes: Write[] = generateWrites(); 

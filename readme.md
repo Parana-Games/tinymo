@@ -4,89 +4,105 @@
 
 [![test](https://github.com/Parana-Games/tinymo/actions/workflows/test.yml/badge.svg)](https://github.com/Parana-Games/tinymo/actions/workflows/test.yml)
 
-Constructing DynamoDB's JSON-based command inputs can get challenging.
+**tinymo** simplifies constructing DynamoDB's JSON-based command inputs.
 
-**tinymo** is here to help!
-
-# 😨
+# From this:
 ```typescript
 const update = {
   TableName: 'users',
   Key: { 
     id: 'john' 
   },
-  UpdateExpression: 'ADD #orders :orders',
-  ConditionExpression: '#balance > :balanceCondition',
+  UpdateExpression: 'SET #orders :orders',
+  ConditionExpression: '#age >= :ageCondition',
   ExpressionAttributeNames: { 
-    '#balance': 'balance', 
+    '#age': 'age', 
     '#orders': 'orders' 
   },
   ExpressionAttributeValues: { 
-    ':balanceCondition': 10, 
-    ':orders': 1 
+    ':ageCondition': 18, 
+    ':orders': 5
   }
 }
-
+...
 ```
-# 😌
+# To this:
 ```typescript
-const update = tinymo.update('users', { id: 'john' });
-update.add('orders', 1);
-update.condition('balance', '>', 10);
+await tinymo.update('users', { id: 'john' }).set('orders', 5).condition('age', '>=', 18).run();
 ```
 
-# Features
-### Chaining!
-```typescript
-update.set('name', 'John').add('age', 30).remove('address');
-```
-### Transactions!
-```typescript
-const transaction = tinymo.transaction();
-
-transaction.delete('users', { pk: 'jeff', id: 'order#001' });
-transaction.update('stores', { id: 'amazon' }).add('balance', 1);
-```
-### Batch writes!
-```typescript
-const batchWrite = tinymo.batchWrite();
-
-batchWrite.delete('stores', { id: '123' });
-batchWrite.put('users', { name: 'jeff' });
-```
-and all of `DocumentClient`'s features!
 # Installation
 ```
 npm i @parana-games/tinymo
 ```
-# Setup
+# How to Use
+1. Import:
 ```typescript
-import { TinymoClient } from '@parana-games/tinymo';
-const tinymo = TinymoClient.default();
+import { tinymo } from '@parana-games/tinymo';
 ```
-Optionally, set your own `DynamoDBClient`: 
+2. Create requests:
+> **tinymo** supports all of `DocumentClient`'s requests:
 ```typescript
-TinymoClient.setDynamoDBClient(new DynamoDBClient({})); // Useful when using X-Ray!
+const update = tinymo.update('tableName', { name: 'John' })
+const put = tinymo.put('tableName', someItem)
+const deleteRequest = tinymo.delete('tableName', { id: 1 })
+const get = tinymo.get('table', { id: 'id' })
+const batchGet = tinymo.batchGet()
+const batchWrite = tinymo.batchWrite()
+const query = tinymo.query('table')
+const scan = tinymo.scan('table')
+const transactGet = tinymo.transactGet()
+const transaction = tinymo.transaction()
 ```
-# Usage
-Create requests through the client:
+3. Customize requests:
+> Request options are accessed through members of the class:
 ```typescript
-const put = tinymo.put('users', { id: '123', name: 'dan' });
-const get = tinymo.get('games', { id: 'pool-stars' }).attributes('description');
-const query = tinymo.query('users').keyBetween('sk', 'order#001', 'order#999');
+get.attributes('id', 'name')
+
+query.key('sk', '>=', 'order#100').filter('type', '=', 'refund')
+
+scan.consistentRead = true
+
+update.returnValues = 'ALL_NEW'
 ```
-Run requests: 
+4. Execute with `.run()`:
+> Every request is executable with `run()`
 ```typescript
-await put.run()
-const getResult = await get.run();
-const queryResult = await query.run();
+await transaction.run()
+
+const queryResponse = await query.run()
+
+const batchGetResponse = await batchGet.run()
+
+Promise.all([put, update, deleteRequest].map(request => request.run()));
 ```
-All tinymo requests are `run`-able, so you can do things like: 
+# Transactions
+**There are two ways of adding writes to a transaction:**
+1. Using the `update`, `put` and `delete` methods:
+>These methods add the corresponding write item to the list and return it, 
+>so you can manipulate and pass it around with ease.
 ```typescript
-Promise.all([put, get, query].map(request => request.run()));
+const update = transaction.update('users', { id: 'dan' })
+update.add('balance', 10);
+
+transaction.put('users', { id: 'john', balance: 20 });
+transaction.delete('orders', { id: '123' });
+```
+
+2. Using the `push` method to add `Write` objects to the transaction.
+> `Write` is the base class of `Update`, `Put` and `Delete`. 
+```typescript
+const writes: Write[] = generateWrites(); 
+
+// Sometimes you have just one update to make, so a transaction is overkill.
+if (writes.length > 1) {
+  await transaction.push(...writes).run();
+} else (writes.length === 0) {
+  await writes[0].run(); 
+}
 ```
 # Testability
-Use `build()` on any tinymo object to output pure DynamoDB JSON-based command inputs:
+Generate pure DynamoDB JSON-based command inputs with `build()`:
 ```typescript
 const put = tinymo.put('games', { name: 'pool-stars' });
 put.build()
@@ -101,8 +117,10 @@ put.build()
 }
 ```
 Useful for <sup><sub>tiny</sub></sup> unit tests!
-# Usage without the tinymo client
-You can also use `build()` when using your own `DynamoDBClient`:
+
+
+# Using without the tinymo Client
+Send commands using your DynamoDBClient:
 ```typescript
 import { Delete } from '@parana-games/tinymo';
 
@@ -111,13 +129,19 @@ const command = new DeleteCommand(tinymoDelete.build());
 const dynamoDBClient = new DynamoDBClient({});
 await dynamoDBClient.send(command);
 ```
-But when creating tinymo's objects using `new`, avoid using `run()`!
+>️ Don't use run() when creating tinymo objects with new. They won't have an associated client.
 ```typescript
 import { Scan } from '@parana-games/tinymo';
 
 const scan = new Scan('users');
 await scan.run(); // error thrown as this instance is clientless
-``` 
+```
+
+## Use `TinymoClient.setDocumentClient` to set your own DocumentClient
+```typescript
+TinymoClient.setDocumentClient(myCustomDocumentClient); // Useful when using X-Ray!
+```
+
 # Documentation
 tinymo aligns strictly with DynamoDB's API, so you can simply [refer to its documentation](https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/Welcome.html).
 

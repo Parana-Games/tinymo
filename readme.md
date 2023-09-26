@@ -11,7 +11,7 @@
 const update = {
   TableName: 'users',
   Key: { 
-    id: 'john' 
+    id: 'bob' 
   },
   UpdateExpression: 'SET #orders :orders',
   ConditionExpression: '#age >= :ageCondition',
@@ -28,7 +28,7 @@ const update = {
 ```
 # To this:
 ```typescript
-await tinymo.update('users', { id: 'john' }).set('orders', 5).condition('age', '>=', 18).run();
+await tinymo.update('users', { id: 'bob' }).set('orders', 5).condition('age', '>=', 18).run();
 ```
 
 # Installation

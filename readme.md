@@ -24,11 +24,10 @@ const update = {
     ':orders': 5
   }
 }
-...
-```
+``` 
 # To this:
 ```typescript
-await tinymo.update('users', { id: 'bob' }).set('orders', 5).condition('age', '>=', 18).run();
+tinymo.update('users', { id: 'bob' }).set('orders', 5).condition('age', '>=', 18)
 ```
 
 # Installation

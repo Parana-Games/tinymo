@@ -72,9 +72,11 @@ describe('update', () => {
 
     update.condition('daze22.00', '=', true)
     update.condition('car', '<>', 9)
+    update.condition('car', '<>', 10)
     update.condition('71M3', '<=', 0)
     update.condition('yes.h', '>=', -1)
     update.condition('art', '<', 4)
+    update.condition('art', '<', 8)
     update.condition('race', '>', 2)
 
     update.conditionExists('emily_')
@@ -142,9 +144,11 @@ describe('update', () => {
         ":thatList": "bla",
         ':daze2200EqualsConditionValue': true,
         ':carNotEqualsConditionValue': 9,
+        ':carNotEqualsConditionValue2': 10,
         ':71M3LessThanOrEqualsConditionValue': 0,
         ':yeshGreaterThanOrEqualsConditionValue': -1,
         ':artLessThanConditionValue': 4,
+        ':artLessThanConditionValue2': 8,
         ':raceGreaterThanConditionValue': 2,
         ':iBeginsWithConditionValue': 'blocks',
         ':thisContainsConditionValue': 'that',
@@ -160,9 +164,11 @@ describe('update', () => {
       ConditionExpression:
         '#daze22.#00 = :daze2200EqualsConditionValue'
         + ' AND #car <> :carNotEqualsConditionValue'
+        + ' AND #car <> :carNotEqualsConditionValue2'
         + ' AND #71M3 <= :71M3LessThanOrEqualsConditionValue'
         + ' AND #yes.#h >= :yeshGreaterThanOrEqualsConditionValue'
         + ' AND #art < :artLessThanConditionValue'
+        + ' AND #art < :artLessThanConditionValue2'
         + ' AND #race > :raceGreaterThanConditionValue'
         + ' AND attribute_exists(#emily_)'
         + ' AND attribute_not_exists(#PT)'
@@ -217,5 +223,25 @@ describe('update', () => {
 
     expect(update1.build()).toStrictEqual(expected1)
     expect(update2.build()).toStrictEqual(expected2)
+  })
+
+  it('build with condition duplicates', () => {
+    const updateWithDuplicates = new Update('table1850', { PK: 'duplicates' })
+    updateWithDuplicates.condition('a', '=', 1)
+    updateWithDuplicates.condition('a', '=', 2)
+    updateWithDuplicates.condition('a', '=', 3)
+
+    expect(updateWithDuplicates.build()).toStrictEqual({
+      TableName: 'table1850',
+      Key: { PK: 'duplicates' },
+      UpdateExpression: '',
+      ExpressionAttributeNames: { '#a': 'a' },
+      ExpressionAttributeValues: {
+        ':aEqualsConditionValue': 1,
+        ':aEqualsConditionValue2': 2,
+        ':aEqualsConditionValue3': 3,
+      },
+      ConditionExpression: "#a = :aEqualsConditionValue AND #a = :aEqualsConditionValue2 AND #a = :aEqualsConditionValue3"
+    })
   })
 })

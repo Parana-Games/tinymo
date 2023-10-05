@@ -89,21 +89,27 @@ describe('query', () => {
 
     query.key('PK', '=', 'id').key('SK', '<', -904)
 
-    query.filterBeginsWith('name', 'zzzzzzz').filterBetween('age', 0, 100)
+    query.filterBeginsWith('name', 'zzzzzzz')
+    query.filterBeginsWith('name', 'xxxxxx')
+    query.filterBeginsWith('name', 'aaaaaa').filterBetween('age', 0, 100)
     query.filterContains('silhouette', 'friendofmine').filterExists('meeee')
     query.filterIn('aaaaahhh', ['a', 'b', 'c']).filterNotExists('aaaaahhhhhhhhh')
+    query.not().filterIn('vroomvroom', ['bus', 'car', 'train'])
     query.filterType('aaaaaaaahhhhhhhhhhhh', 'Null')
 
     expect(query.build()).toEqual({
       TableName: 'momentdivine',
       FilterExpression:
         'begins_with(#name, :nameBeginsWithConditionValue) '
+        + 'AND begins_with(#name, :nameBeginsWithConditionValue2) '
+        + 'AND begins_with(#name, :nameBeginsWithConditionValue3) '
         + 'AND #age BETWEEN :ageLower '
         + 'AND :ageUpper '
         + 'AND contains(#silhouette, :silhouetteContainsConditionValue) '
         + 'AND attribute_exists(#meeee) '
         + 'AND #aaaaahhh IN (:aaaaahhhInConditionValue0, :aaaaahhhInConditionValue1, :aaaaahhhInConditionValue2) '
         + 'AND attribute_not_exists(#aaaaahhhhhhhhh) '
+        + 'AND NOT #vroomvroom IN (:vroomvroomInConditionValue0, :vroomvroomInConditionValue1, :vroomvroomInConditionValue2) '
         + 'AND attribute_type(#aaaaaaaahhhhhhhhhhhh, NULL)',
       KeyConditionExpression: '#PK = :PKEqualsConditionValue AND #SK < :SKLessThanConditionValue',
       ExpressionAttributeNames: {
@@ -115,16 +121,22 @@ describe('query', () => {
         '#meeee': 'meeee',
         '#aaaaahhh': 'aaaaahhh',
         '#aaaaahhhhhhhhh': 'aaaaahhhhhhhhh',
-        '#aaaaaaaahhhhhhhhhhhh': 'aaaaaaaahhhhhhhhhhhh'
+        '#aaaaaaaahhhhhhhhhhhh': 'aaaaaaaahhhhhhhhhhhh',
+        '#vroomvroom': 'vroomvroom'
       },
       ExpressionAttributeValues: {
         ':nameBeginsWithConditionValue': 'zzzzzzz',
+        ':nameBeginsWithConditionValue2': 'xxxxxx',
+        ':nameBeginsWithConditionValue3': 'aaaaaa',
         ':ageLower': 0,
         ':ageUpper': 100,
         ':silhouetteContainsConditionValue': 'friendofmine',
         ':aaaaahhhInConditionValue0': 'a',
         ':aaaaahhhInConditionValue1': 'b',
         ':aaaaahhhInConditionValue2': 'c',
+        ":vroomvroomInConditionValue0": "bus",
+        ":vroomvroomInConditionValue1": "car",
+        ":vroomvroomInConditionValue2": "train",
         ':PKEqualsConditionValue': 'id',
         ':SKLessThanConditionValue': -904
       }
@@ -137,8 +149,8 @@ describe('query', () => {
     query.filterSize('mzzz', '<>', 1)
     query.filterSize('pageUP', '<', 2)
     query.filterSize('ABCDEFG', '>', 3)
-    query.filterSize('pageDown', '<=', 4)
-    query.filterSize('WOWWW', '>=', 5)
+    query.or().filterSize('pageDown', '<=', 4)
+    query.not().filterSize('WOWWW', '>=', 5)
 
     expect(query.build()).toEqual({
       TableName: 'planteryduality',
@@ -147,8 +159,8 @@ describe('query', () => {
         + 'AND size(#mzzz) <> :mzzzSizeNotEqualsConditionValue '
         + 'AND size(#pageUP) < :pageUPSizeLessThanConditionValue '
         + 'AND size(#ABCDEFG) > :ABCDEFGSizeGreaterThanConditionValue '
-        + 'AND size(#pageDown) <= :pageDownSizeLessThanOrEqualsConditionValue '
-        + 'AND size(#WOWWW) >= :WOWWWSizeGreaterThanOrEqualsConditionValue',
+        + 'OR size(#pageDown) <= :pageDownSizeLessThanOrEqualsConditionValue '
+        + 'AND NOT size(#WOWWW) >= :WOWWWSizeGreaterThanOrEqualsConditionValue',
       ExpressionAttributeNames: {
         '#paaa': 'paaa',
         '#mzzz': 'mzzz',

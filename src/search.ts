@@ -20,6 +20,11 @@ export abstract class Search extends Read {
   filterBetween(key: string, value1: any, value2: any) { this.filterExpression.between(key, value1, value2); return this; }
   filterIn(key: string, values: any[]) { this.filterExpression.in(key, values); return this; }
 
+  /** applies the NOT logical evaluation operator to the next filter statement */
+  not() { this.filterExpression.not(); return this; }
+  /** applies the OR logical evaluation operator to the next filter statement */
+  or() { this.filterExpression.or(); return this; }
+
   build() {
     const base: any = super.build();
 

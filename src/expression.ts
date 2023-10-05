@@ -23,7 +23,8 @@ export class ExpressionBuilder {
   }
 
   addValue(name: string, value: any, valueNameSuffix: string = ""): string {
-    const valueToken = `:${this.replaceAll(name, ".", "")}${valueNameSuffix}`;
+    let valueToken = `:${this.replaceAll(name, ".", "")}${valueNameSuffix}`;
+    if (this.values[valueToken]) valueToken += Object.keys(this.values).filter((k) => k.startsWith(valueToken)).length + 1;
     this.values[valueToken] = value;
     return valueToken;
   }

@@ -244,4 +244,22 @@ describe('update', () => {
       ConditionExpression: "#a = :aEqualsConditionValue AND #a = :aEqualsConditionValue2 AND #a = :aEqualsConditionValue3"
     })
   })
+
+  it('update with 2 empty lists', () => {
+    const update = new Update('table1850', { PK: 'duplicates' })
+    update.addToList('a', [1, 2, 3])
+    update.addToList('b', [4, 5, 6])
+    expect(update.build()).toStrictEqual({
+        "TableName": "table1850",
+        "Key": { "PK": "duplicates" },
+        "UpdateExpression": "SET #a = list_append(if_not_exists(#a, :newList), :a), #b = list_append(if_not_exists(#b, :newList2), :b)",
+        "ExpressionAttributeNames": { "#a": "a", "#b": "b" },
+        "ExpressionAttributeValues": {
+          ":newList": [],
+          ":a": [ 1, 2, 3 ],
+          ":newList2": [],
+          ":b": [ 4, 5, 6 ]
+        }
+      })
+  })
 })

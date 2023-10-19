@@ -53,8 +53,8 @@ export class Update extends Write {
     const flatArray = [value].flat()
 
     if (createIfNotExists) {
-      this.setBuilder.addValue(`newList`, [])
-      this.setBuilder.pair(listName, flatArray, (n, v) => `${n} = list_append(if_not_exists(${n}, :newList), ${v})`)
+      const valueToken = this.setBuilder.addValue(`newList`, [])
+      this.setBuilder.pair(listName, flatArray, (n, v) => `${n} = list_append(if_not_exists(${n}, ${valueToken}), ${v})`)
     } else {
       this.setBuilder.pair(listName, flatArray, (n, v) => `${n} = list_append(${n}, ${v})`)
     }

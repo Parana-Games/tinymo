@@ -21,11 +21,9 @@ export abstract class Write extends Conditionable implements TransactWritable {
 
   build() {
     const write: any = { ...super.build(), TableName: this.tableName };
-
     if (this.returnConsumedCapacity !== undefined) write.ReturnConsumedCapacity = this.returnConsumedCapacity;
     if (this.returnItemCollectionMetrics !== undefined) write.ReturnItemCollectionMetrics = this.returnItemCollectionMetrics;
     if (this.returnValues !== undefined) write.ReturnValues = this.returnValues;
-
     return write;
   }
 }

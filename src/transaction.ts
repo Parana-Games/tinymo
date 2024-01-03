@@ -3,9 +3,12 @@ import { Put } from './put';
 import { Update } from './update';
 import { DynamoDBDocumentClient, TransactWriteCommand, TransactWriteCommandInput, TransactWriteCommandOutput } from '@aws-sdk/lib-dynamodb';
 import { ConditionCheck } from './condition-check';
-import { TransactWritable } from './common';
+import { ReturnConsumedCapacity, ReturnItemCollectionMetrics, TransactWritable } from './common';
 
 export class Transaction {
+  returnConsumedCapacity?: ReturnConsumedCapacity = undefined;
+  returnItemCollectionMetrics?: ReturnItemCollectionMetrics = undefined;
+  clientRequestToken?: string = undefined;
   private transactWriteItems: TransactWritable[] = [];
 
   public get length() { return this.transactWriteItems.length; }
@@ -14,7 +17,6 @@ export class Transaction {
   constructor(private client: DynamoDBDocumentClient) { }
 
   push(...transactable: TransactWritable[]): Transaction { this.transactWriteItems.push(...transactable); return this; }
-  build(): TransactWriteCommandInput { return { TransactItems: this.transactWriteItems.map((item) => item.transactWriteItem()) }; }
   async run(): Promise<TransactWriteCommandOutput> { return await this.client.send(new TransactWriteCommand(this.build())); }
 
   put(tableName: string, item: any): Put {
@@ -39,5 +41,13 @@ export class Transaction {
     const conditionCheck = new ConditionCheck(tableName, key);
     this.push(conditionCheck);
     return conditionCheck;
+  }
+
+  build(): TransactWriteCommandInput {
+    const input: TransactWriteCommandInput = { TransactItems: this.transactWriteItems.map((item) => item.transactWriteItem()) };
+    if (this.returnConsumedCapacity !== undefined) input.ReturnConsumedCapacity = this.returnConsumedCapacity;
+    if (this.returnItemCollectionMetrics !== undefined) input.ReturnItemCollectionMetrics = this.returnItemCollectionMetrics;
+    if (this.clientRequestToken !== undefined) input.ClientRequestToken = this.clientRequestToken;
+    return input;
   }
 }

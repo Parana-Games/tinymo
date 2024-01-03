@@ -7,6 +7,10 @@ describe('transaction', () => {
     const transaction = tinymo.transaction()
     expect(transaction.isEmpty()).toBe(true)
 
+    transaction.returnConsumedCapacity = 'TOTAL'
+    transaction.returnItemCollectionMetrics = 'SIZE'
+    transaction.clientRequestToken = 'client_token'  
+
     transaction.put('table1', { ID: '1' })
     transaction.delete('table3', { ID: '3' })
 
@@ -64,7 +68,10 @@ describe('transaction', () => {
             }
           }
         }
-      ]
+      ], 
+      ClientRequestToken: 'client_token',
+      ReturnConsumedCapacity: 'TOTAL',
+      ReturnItemCollectionMetrics: 'SIZE'
     }
 
     expect(transaction.build()).toEqual(expected)

@@ -2,7 +2,7 @@ import { QueryCommand, QueryCommandInput } from '@aws-sdk/lib-dynamodb';
 import { ConditionExpression } from './condition';
 import { Search } from './search';
 
-export type KeyComparator = '=' | '<>' | '<' | '>' | '<=' | '>=';
+export type KeyComparator = '=' | '<' | '>' | '<=' | '>=';
 
 export class Query extends Search {
   private keyCondition = new ConditionExpression();
